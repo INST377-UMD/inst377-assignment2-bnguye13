@@ -1,0 +1,226 @@
+<head>
+  <title>Dogs</title>
+  <script src="https://cdn.jsdelivr.net/npm/simple-slider@2.3.0/simple-slider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #e63946;
+      padding: 10px 20px;
+      text-align: center;
+    }
+
+    .navbar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .navbar ul li {
+      display: inline;
+      margin-right: 20px;
+    }
+
+    .navbar ul li a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .navbar ul li a:hover {
+      color: #ffb703;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e63946;
+      font-size: 36px;
+      padding: 20px;
+    }
+
+    .carousel-container {
+      width: 80%;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .carousel img {
+      width: 100%;
+      height: auto;
+    }
+
+    .breed-buttons {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .breed-buttons button {
+      background-color: #ff6f61;
+      color: white;
+      font-size: 18px;
+      padding: 10px 30px;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    .breed-buttons button:hover {
+      background-color: #d04e3e;
+    }
+
+    .dog-info {
+      text-align: center;
+      padding: 20px;
+      background-color: #f1faee;
+      margin: 20px;
+      display: none;
+    }
+
+    .audio-instructions {
+      background-color: #2a9d8f;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin: 20px;
+    }
+
+    .audio-instructions button {
+      background-color: #e63946;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .audio-instructions button:hover {
+      background-color: #ffb703;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <ul>
+      <li><a href="home.html">Home</a></li>
+      <li><a href="stocks.html">Stocks</a></li>
+      <li><a href="dogs.html">Dogs</a></li>
+    </ul>
+  </div>
+
+  <h1>Doggos!</h1>
+
+  <div class="carousel-container">
+    <div id="dog-carousel" class="simple-slider">
+    </div>
+  </div>
+
+  <div class="breed-buttons" id="breed-buttons">
+  </div>
+
+  <div class="dog-info" id="dog-info">
+    <h2 id="dog-name"></h2>
+    <p id="dog-description"></p>
+    <p>Min Life: <span id="dog-min-life"></span> years</p>
+    <p>Max Life: <span id="dog-max-life"></span> years</p>
+  </div>
+
+  <div class="audio-instructions">
+    <p>In this web page, you can use voice commands:</p>
+    <ul>
+      <li>Say "Load Dog Breed <Breed Name>" to display breed information.</li>
+      <li>Say "Navigate to <Page>" to switch between pages.</li>
+      <li>Say "Change the color to <Color>" to change the background color.</li>
+    </ul>
+    <button onclick="startListening()">Turn On Listening</button>
+    <button onclick="stopListening()">Turn Off Listening</button>
+  </div>
+
+  <script>
+    function loadDogImages() {
+      fetch('https://dog.ceo/api/breeds/image/random/10')
+        .then(response => response.json())
+        .then(data => {
+          const carouselContainer = document.getElementById('dog-carousel');
+          data.message.forEach(url => {
+            const imgElement = document.createElement('img');
+            imgElement.src = url;
+            imgElement.alt = 'Random Dog';
+            carouselContainer.appendChild(imgElement);
+          });
+          new SimpleSlider('#dog-carousel');
+        })
+        .catch(error => {
+          console.error('Error fetching dog images:', error);
+        });
+    }
+
+    function loadDogBreeds() {
+      fetch('https://dog.ceo/api/breeds/list/all')
+        .then(response => response.json())
+        .then(data => {
+          const breeds = Object.keys(data.message);
+          const breedButtonsContainer = document.getElementById('breed-buttons');
+
+          breeds.forEach(breed => {
+            const breedButton = document.createElement('button');
+            breedButton.textContent = breed;
+            breedButton.setAttribute('onclick', `loadBreedInfo('${breed}')`);
+            breedButtonsContainer.appendChild(breedButton);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching dog breeds:', error);
+        });
+    }
+
+    function loadBreedInfo(breed) {
+      fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
+        .then(response => response.json())
+        .then(data => {
+          const breedInfoContainer = document.getElementById('dog-info');
+          document.getElementById('dog-name').textContent = breed;
+          document.getElementById('dog-description').textContent = `The ${breed} is a great companion with unique characteristics.`;
+          document.getElementById('dog-min-life').textContent = 10;
+          document.getElementById('dog-max-life').textContent = 14;
+
+          breedInfoContainer.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error fetching breed info:', error);
+        });
+    }
+
+    function startListening() {
+      if (annyang) {
+        const commands = {
+          'load dog breed *breed': (breed) => {
+            loadBreedInfo(breed);
+          },
+          'navigate to *page': (page) => {
+            window.location.href = `${page.toLowerCase()}.html`;
+          },
+          'change the color to *color': (color) => {
+            document.body.style.backgroundColor = color;
+          }
+        };
+        annyang.addCommands(commands);
+        annyang.start();
+      }
+    }
+
+    function stopListening() {
+      if (annyang) {
+        annyang.abort();
+      }
+    }
+
+    loadDogImages();
+    loadDogBreeds();
+  </script>
+</body>
+</html>
