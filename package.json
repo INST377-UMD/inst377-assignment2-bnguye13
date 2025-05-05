@@ -1,0 +1,28 @@
+{
+  "name": "inst377-assignment2-bnguye13",
+  "version": "1.0.0",
+  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Fjj4gHXd)",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/INST377-UMD/inst377-assignment2-bnguye13.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/INST377-UMD/inst377-assignment2-bnguye13/issues"
+  },
+  "homepage": "https://github.com/INST377-UMD/inst377-assignment2-bnguye13#readme",
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
